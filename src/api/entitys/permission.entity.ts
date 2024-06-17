@@ -14,6 +14,20 @@ export class Permission {
     @ManyToOne(() => Menu, menu => menu.permissions)
     menu: Menu;
 
+    @Column({
+        name: 'role_id',
+        type: 'int',
+        comment: '角色ID'
+    })
+    roleId: number;
+
+    @Column({
+        name: 'menu_id',
+        type: 'int',
+        comment: '菜单ID'
+    })
+    menuId: number;
+
     @CreateDateColumn({
         name: 'created_at',
         type: 'timestamp',

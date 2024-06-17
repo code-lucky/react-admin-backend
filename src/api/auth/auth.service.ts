@@ -17,60 +17,49 @@ export class AuthService {
    * @param createAuthDto 
    */
   async register(createAuthDto: CreateAuthDto) {
-    try{
-
-      // if user already exists
-      const user = await this.authRepository.findOne(
-        {
-          where: {
-            username: createAuthDto.username
-          }
+    // if user already exists
+    const user = await this.authRepository.findOne(
+      {
+        where: {
+          username: createAuthDto.username
         }
-      );
-      if(user){
-        throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
       }
-
-      // create user
-      const newUser = new Auth();
-      newUser.username = createAuthDto.username;
-      // md5 encryption
-      newUser.password = md5(createAuthDto.password);
-      newUser.email = createAuthDto.email;
-      await this.authRepository.save(newUser);
-
-      return 'User created successfully';
-    }catch(e){
-      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    );
+    if(user){
+      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
-    
+
+    // create user
+    const newUser = new Auth();
+    newUser.username = createAuthDto.username;
+    // md5 encryption
+    newUser.password = md5(createAuthDto.password);
+    newUser.email = createAuthDto.email;
+    await this.authRepository.save(newUser);
+
+    return 'User created successfully';
   }
 
 
   async login(user: LoginDto) {
-    try{
-      
-      const findUser = await this.authRepository.findOne(
-        {
-          where: {
-            username: user.username,
-          }
+    const findUser = await this.authRepository.findOne(
+      {
+        where: {
+          username: user.username,
         }
-      );
-
-      // if user does not exist
-      if(!findUser){
-        throw new HttpException('User does not exist', HttpStatus.BAD_REQUEST);
       }
+    );
 
-      // verify password
-      if(findUser.password !== md5(user.password)){
-        throw new HttpException('Password error', HttpStatus.BAD_REQUEST);
-      }
-
-      return findUser;
-    }catch(e){
-      
+    // if user does not exist
+    if(!findUser){
+      throw new HttpException('User does not exist', HttpStatus.BAD_REQUEST);
     }
+
+    // verify password
+    if(findUser.password !== md5(user.password)){
+      throw new HttpException('Password error', HttpStatus.BAD_REQUEST);
+    }
+
+    return findUser;
   }
 }

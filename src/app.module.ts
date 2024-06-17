@@ -16,6 +16,9 @@ import { FileModule } from './api/file/file.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AuthModule } from './api/auth/auth.module';
+import { MenuModule } from './api/menu/menu.module';
+import { RoleModule } from './api/role/role.module';
+import { PermissionModule } from './api/permission/permission.module';
 
 @Module({
   imports: [
@@ -93,6 +96,9 @@ import { AuthModule } from './api/auth/auth.module';
     EmailModule,
     FileModule,
     AuthModule,
+    MenuModule,
+    RoleModule,
+    PermissionModule,
   ],
   controllers: [AppController],
   providers: [
