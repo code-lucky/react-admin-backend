@@ -57,16 +57,14 @@ export class Auth {
     role: Role;
 
     @CreateDateColumn({
-        name: 'created_at',
         type: 'timestamp',
         comment: '创建时间'
     })
-    createdAt: Date;
+    created_at: Date;
 
     @UpdateDateColumn({
-        name: 'updated_at',
         type: 'timestamp',
         comment: '更新时间'
     })
-    updatedAt: Date;
+    updated_at: Date;
 }

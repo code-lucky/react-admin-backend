@@ -15,30 +15,26 @@ export class Permission {
     menu: Menu;
 
     @Column({
-        name: 'role_id',
         type: 'int',
         comment: '角色ID'
     })
     roleId: number;
 
     @Column({
-        name: 'menu_id',
         type: 'int',
         comment: '菜单ID'
     })
     menuId: number;
 
     @CreateDateColumn({
-        name: 'created_at',
-        type: 'timestamp',
+        type: 'datetime',
         comment: '创建时间'
     })
-    createdAt: Date;
+    created_at: Date;
 
     @UpdateDateColumn({
-        name: 'updated_at',
-        type: 'timestamp',
+        type: 'datetime',
         comment: '更新时间'
     })
-    updatedAt: Date;
+    updated_at: Date;
 }

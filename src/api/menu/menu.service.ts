@@ -18,15 +18,7 @@ export class MenuService {
    * @returns 
    */
   async create(menuDto: CreateMenuDto) {
-    const menu = new Menu();
-    menu.name = menuDto.name;
-    menu.route = menuDto.route;
-    menu.component = menuDto.component;
-    menu.icon = menuDto.icon;
-    menu.pid = menuDto.pid;
-    menu.sort = menuDto.sort;
-    menu.delete = 0;
-    await this.menuRepository.save(menu);
+    await this.menuRepository.save(menuDto);
 
     return 'Create successfully'
   }
@@ -66,11 +58,11 @@ export class MenuService {
    * @param updateMenuDto 
    * @returns 
    */
-  async update(updateMenuDto: UpdateMenuDto) {
+  async update(menuDto: UpdateMenuDto) {
 
     const finMenu = await this.menuRepository.findOne({
       where:{
-        id: updateMenuDto.id,
+        id: menuDto.id,
       }
     })
 
@@ -78,17 +70,7 @@ export class MenuService {
       throw new HttpException('Menu not found', HttpStatus.BAD_REQUEST);
     }
 
-    const menu = new Menu();
-
-    menu.id = updateMenuDto.id;
-    menu.name = updateMenuDto.name;
-    menu.route = updateMenuDto.route;
-    menu.component = updateMenuDto.component;
-    menu.icon = updateMenuDto.icon;
-    menu.pid = updateMenuDto.pid;
-    menu.sort = updateMenuDto.sort;
-
-    await this.menuRepository.save(menu);
+    await this.menuRepository.update(menuDto.id, menuDto);
 
     return 'Update successfully'
   }
