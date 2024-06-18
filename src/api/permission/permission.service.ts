@@ -1,26 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
+import { AuthPermissionDto } from './dto/auth-permission.dto';
+import { Repository } from 'typeorm';
+import { Permission } from '../entitys/permission.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Http } from 'winston/lib/winston/transports';
 
 @Injectable()
 export class PermissionService {
-  create(createPermissionDto: CreatePermissionDto) {
-    return 'This action adds a new permission';
-  }
 
-  findAll() {
-    return `This action returns all permission`;
-  }
+  @InjectRepository(Permission)
+  private permissionRepository: Repository<Permission>;
 
-  findOne(id: number) {
-    return `This action returns a #${id} permission`;
-  }
+  /**
+   * role 鉴权
+   * @param authDto 
+   */
+  async authRolePermission(authDto: AuthPermissionDto) {
+    const { roleId, menuList } = authDto;
+    const queryRunner = this.permissionRepository.manager.connection.createQueryRunner();
+    queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await this.permissionRepository.delete({ roleId });
 
-  update(id: number, updatePermissionDto: UpdatePermissionDto) {
-    return `This action updates a #${id} permission`;
-  }
+      const permissionList = menuList.map(menuId => {
+        return { roleId, menuId };
+      });
 
-  remove(id: number) {
-    return `This action removes a #${id} permission`;
+      await this.permissionRepository.insert(permissionList);
+
+      await queryRunner.commitTransaction();
+
+      return 'auth permission success';
+    } catch (e) {
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

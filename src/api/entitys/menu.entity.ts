@@ -40,6 +40,7 @@ export class Menu {
         type: 'varchar',
         length: 100,
         comment: '组件路径',
+        nullable: true,
     })
     component: string;
 

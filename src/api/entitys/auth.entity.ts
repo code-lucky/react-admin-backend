@@ -56,14 +56,20 @@ export class Auth {
     @ManyToOne(() => Role, role => role.auths)
     role: Role;
 
+    @Column({
+        type: 'int',
+        comment: '角色ID'
+    })
+    roleId: number;
+
     @CreateDateColumn({
-        type: 'timestamp',
+        type: 'datetime',
         comment: '创建时间'
     })
     created_at: Date;
 
     @UpdateDateColumn({
-        type: 'timestamp',
+        type: 'datetime',
         comment: '更新时间'
     })
     updated_at: Date;

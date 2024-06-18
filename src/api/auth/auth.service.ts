@@ -5,12 +5,24 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Auth } from '../entitys/auth.entity';
 import { md5 } from 'src/utils/md5';
 import { LoginDto } from './dto/login.dto';
+import { Role } from '../entitys/role.entity';
+import { Menu } from '../entitys/menu.entity';
+import { Permission } from '../entitys/permission.entity';
 
 @Injectable()
 export class AuthService {
   
   @InjectRepository(Auth)
-  private authRepository: Repository<Auth>; 
+  private authRepository: Repository<Auth>;
+
+  @InjectRepository(Role)
+  private roleRepository: Repository<Role>; 
+
+  @InjectRepository(Menu)
+  private menuRepository: Repository<Menu>; 
+
+  @InjectRepository(Permission)
+  private permissionRepository: Repository<Permission>; 
   
   /**
    * User register
@@ -60,6 +72,44 @@ export class AuthService {
       throw new HttpException('Password error', HttpStatus.BAD_REQUEST);
     }
 
-    return findUser;
+    // 获取role
+    const role = await this.roleRepository.findOne(
+      {
+        where: {
+          id: findUser.roleId
+        }
+      }
+    );
+
+    // 通过关联查询获取role下的menu,permission是中间表，里面有roleid和menuid
+    const permission = await this.permissionRepository.find(
+      {
+        where: {
+          roleId: findUser.roleId
+        }
+      }
+    );
+
+    // 获取menu
+    const menuIds = permission.map(item => item.menuId);
+    const menus = await this.menuRepository.findByIds(menuIds);
+
+    const data ={
+      user:{
+        username: findUser.username,
+        email: findUser.email,
+        id: findUser.id,
+        avatar: findUser.avatar,
+        created_at: findUser.created_at,
+        updated_at: findUser.updated_at,
+        roleId: findUser.roleId,
+        permissions: menus,
+        role:{
+          ...role,
+          permission: menus
+        }
+      }
+    }
+    return data;
   }
 }
