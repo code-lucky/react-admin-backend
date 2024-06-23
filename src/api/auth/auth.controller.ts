@@ -26,22 +26,22 @@ export class AuthController {
     const vo = await this.authService.login(user);
 
     // 生成token
-    const access_token = this.jwtService.sign({
+    const accessToken = this.jwtService.sign({
       userId: vo.user.id,
       username: vo.user.username
     }, {
       expiresIn: this.configService.get('jwt_access_token_expires_time') || '30m'
     })
 
-    const refresh_token = this.jwtService.sign({
+    const refreshToken = this.jwtService.sign({
       userId: vo.user.id
     }, {
       expiresIn: this.configService.get('jwt_refresh_token_expres_time') || '7d'
     });
 
     const data = {
-      access_token,
-      refresh_token,
+      accessToken,
+      refreshToken,
       user: vo.user
     }
 

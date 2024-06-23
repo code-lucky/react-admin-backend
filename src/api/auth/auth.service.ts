@@ -8,22 +8,23 @@ import { LoginDto } from './dto/login.dto';
 import { Role } from '../entitys/role.entity';
 import { Menu } from '../entitys/menu.entity';
 import { Permission } from '../entitys/permission.entity';
+import { toTree } from 'src/utils/tree';
 
 @Injectable()
 export class AuthService {
-  
+
   @InjectRepository(Auth)
   private authRepository: Repository<Auth>;
 
   @InjectRepository(Role)
-  private roleRepository: Repository<Role>; 
+  private roleRepository: Repository<Role>;
 
   @InjectRepository(Menu)
-  private menuRepository: Repository<Menu>; 
+  private menuRepository: Repository<Menu>;
 
   @InjectRepository(Permission)
-  private permissionRepository: Repository<Permission>; 
-  
+  private permissionRepository: Repository<Permission>;
+
   /**
    * User register
    * @param createAuthDto 
@@ -37,7 +38,7 @@ export class AuthService {
         }
       }
     );
-    if(user){
+    if (user) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
@@ -63,12 +64,12 @@ export class AuthService {
     );
 
     // if user does not exist
-    if(!findUser){
+    if (!findUser) {
       throw new HttpException('User does not exist', HttpStatus.BAD_REQUEST);
     }
 
     // verify password
-    if(findUser.password !== md5(user.password)){
+    if (findUser.password !== md5(user.password)) {
       throw new HttpException('Password error', HttpStatus.BAD_REQUEST);
     }
 
@@ -93,9 +94,11 @@ export class AuthService {
     // 获取menu
     const menuIds = permission.map(item => item.menuId);
     const menus = await this.menuRepository.findByIds(menuIds);
+    
+    const treeData = toTree(menus);
 
-    const data ={
-      user:{
+    const data = {
+      user: {
         username: findUser.username,
         email: findUser.email,
         id: findUser.id,
@@ -103,10 +106,10 @@ export class AuthService {
         created_at: findUser.created_at,
         updated_at: findUser.updated_at,
         roleId: findUser.roleId,
-        permissions: menus,
-        role:{
+        permissions: treeData,
+        role: {
           ...role,
-          permission: menus
+          permission: treeData
         }
       }
     }

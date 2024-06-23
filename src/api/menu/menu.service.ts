@@ -4,7 +4,7 @@ import { UpdateMenuDto } from './dto/update-menu.dto';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Menu } from '../entitys/menu.entity';
-import { Http } from 'winston/lib/winston/transports';
+import { toTree } from 'src/utils/tree';
 
 @Injectable()
 export class MenuService {
@@ -33,7 +33,10 @@ export class MenuService {
         delete: 0
       }
     });
-    return list;
+
+    const menuList = toTree(list)
+
+    return menuList;
   }
 
 
